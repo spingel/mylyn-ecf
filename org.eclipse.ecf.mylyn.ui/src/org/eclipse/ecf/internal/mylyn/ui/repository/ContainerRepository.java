@@ -104,6 +104,8 @@ public class ContainerRepository {
 
 	private ID targetID;
 
+	private boolean listenersRegistered;
+
 	public ContainerRepository() {
 		this(new RepositoryLocation());
 	}
@@ -139,7 +141,10 @@ public class ContainerRepository {
 			return false;
 		}
 
-		registerListeners();
+		if (!listenersRegistered) {
+			listenersRegistered = true;
+			registerListeners();
+		}
 
 		// Connect
 		new AsynchContainerConnectAction(container, targetID, connectContext, null, new Runnable() {

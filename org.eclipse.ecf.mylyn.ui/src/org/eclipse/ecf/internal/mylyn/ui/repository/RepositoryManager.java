@@ -1,5 +1,7 @@
 package org.eclipse.ecf.internal.mylyn.ui.repository;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
@@ -18,9 +20,28 @@ public class RepositoryManager {
 
 	private final File cacheFile;
 
+	private PropertyChangeListener propertyListener = new PropertyChangeListener() {
+		public void propertyChange(PropertyChangeEvent evt) {
+			for (RepositoryListener listener : listeners) {
+				repositoryChanged(evt.getSource());
+			}
+		}
+	};
+
 	public RepositoryManager(File cacheFile) {
 		this.cacheFile = cacheFile;
 		read();
+	}
+
+	protected void repositoryChanged(Object source) {
+		for (ContainerRepository repository : repositories) {
+			if (repository.getLocation() == source) {
+				for (RepositoryListener listener : listeners) {
+					listener.repositoryChanged(repository);
+				}
+				break;
+			}
+		}
 	}
 
 	public void addListener(RepositoryListener listener) {
@@ -29,6 +50,7 @@ public class RepositoryManager {
 
 	public void addRepository(ContainerRepository repository) {
 		repositories.add(repository);
+		repository.getLocation().addChangeListener(propertyListener);
 		for (RepositoryListener listener : listeners) {
 			listener.repositoryAdded(repository);
 		}

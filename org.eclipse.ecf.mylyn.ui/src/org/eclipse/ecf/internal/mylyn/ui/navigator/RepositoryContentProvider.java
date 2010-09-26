@@ -31,6 +31,11 @@ public class RepositoryContentProvider implements ITreeContentProvider {
 			refresh();
 		}
 
+		@Override
+		public void repositoryChanged(ContainerRepository repository) {
+			refresh();
+		}
+
 	}
 
 	private static final Object[] EMPTY_ARRAY = new Object[0];

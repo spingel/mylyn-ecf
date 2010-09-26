@@ -8,4 +8,7 @@ public class RepositoryListener {
 	public void repositoryRemoved(ContainerRepository repository) {
 	}
 
+	public void repositoryChanged(ContainerRepository repository) {
+	}
+
 }

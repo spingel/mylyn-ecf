@@ -47,9 +47,12 @@
               category="org.eclipse.ecf.mylyn.ui.category.Communication"
               class="org.eclipse.ecf.internal.mylyn.ui.repository.ContainerRepositoryWizard"
               hasPages="true"
-              icon="icons/full/obj16/server.gif"
+              icon="icons/full/obj16/person.gif"
               id="org.eclipse.ecf.mylyn.ui.wizard.NewRepository"
-              name="XMPP Server">
+              name="XMPP">
+           <description>
+              Connects to Jabber, GoogleTalk and other XMPP accounts
+           </description>
         </wizard>
         <category
               id="org.eclipse.ecf.mylyn.ui.category.Communication"
@@ -72,13 +75,13 @@
       <navigatorContent
             activeByDefault="true"
             contentProvider="org.eclipse.ecf.internal.mylyn.ui.navigator.RepositoryContentProvider"
-            icon="icons/full/obj16/server.gif"
+            icon="icons/full/obj16/person.gif"
             id="org.eclipse.ecf.mylyn.ui.navigator.Repositories"
             labelProvider="org.eclipse.ecf.internal.mylyn.ui.navigator.RepositoryLabelProvider"
-            name="Task Repositories">
+            name="Communication Accounts">
          <possibleChildren>
             <instanceof
-                  value="org.eclipse.mylyn.tasks.core.TaskRepository">
+                  value="org.eclipse.ecf.internal.mylyn.ui.repository.ContainerRepository">
             </instanceof>
          </possibleChildren>
          <triggerPoints>
@@ -182,6 +185,18 @@
                 commandId="org.eclipse.ecf.mylyn.ui.command.Connect"
                 label="Connect"
                 style="push">
+             <visibleWhen
+                   checkEnabled="false">
+                <iterate
+                      ifEmpty="false"
+                      operator="and">
+                   <and>
+                      <instanceof
+                            value="org.eclipse.ecf.internal.mylyn.ui.repository.ContainerRepository">
+                      </instanceof>
+                   </and>
+                </iterate>
+             </visibleWhen>
           </command>
        </menuContribution>
     </extension>

@@ -78,6 +78,7 @@ public class ContainerRepositoryWizard extends Wizard implements INewWizard {
 
 	@Override
 	public boolean performFinish() {
+		getModel().setIdPreservingCredentialsStore(getModel().getUrl() + ";" + getModel().getUserName());
 		original.getLocation().apply(getModel());
 		if (isNew()) {
 			Activator.getDefault().getRepositoryManager().addRepository(original);
