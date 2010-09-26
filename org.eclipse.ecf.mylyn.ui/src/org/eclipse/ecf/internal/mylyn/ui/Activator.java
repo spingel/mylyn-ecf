@@ -13,8 +13,6 @@ package org.eclipse.ecf.internal.mylyn.ui;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.List;
-import java.util.Set;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.datashare.*;
@@ -22,10 +20,11 @@ import org.eclipse.ecf.datashare.events.IChannelEvent;
 import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
 import org.eclipse.ecf.presence.service.IPresenceService;
 import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.mylyn.context.core.ContextCore;
 import org.eclipse.mylyn.context.core.IInteractionContext;
-import org.eclipse.mylyn.internal.tasks.ui.TasksUiPlugin;
-import org.eclipse.mylyn.tasks.core.ITask;
+import org.eclipse.mylyn.internal.context.core.ContextCorePlugin;
+import org.eclipse.mylyn.internal.tasks.core.AbstractTask;
+import org.eclipse.mylyn.internal.tasks.ui.actions.ImportAction;
+import org.eclipse.mylyn.internal.tasks.ui.actions.ImportAction.ImportStatus;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
@@ -87,11 +86,10 @@ public class Activator extends AbstractUIPlugin implements IChannelListener, Ser
 			try {
 				FileOutputStream fos = new FileOutputStream(file);
 				fos.write(data);
-				List tasks = TasksUiPlugin.getTaskListManager().getTaskListWriter().readTasks(file);
-				final ITask task = (ITask) tasks.get(0);
-				Set repositories = TasksUiPlugin.getTaskListManager().getTaskListWriter().readRepositories(file);
-				TasksUiPlugin.getRepositoryManager().insertRepositories(repositories, TasksUiPlugin.getDefault().getRepositoriesFilePath());
-				IInteractionContext context = ContextCore.getContextStore().importContext(task.getHandleIdentifier(), file);
+				ImportAction action = new ImportAction();
+				ImportStatus result = action.importElements(file);
+				final AbstractTask task = result.getTaskList().getAllTasks().iterator().next();
+				IInteractionContext context = ContextCorePlugin.getContextStore().loadContext(task.getHandleIdentifier());
 				CompoundContextActivationContributionItem.enqueue(task, context);
 
 				IWorkbenchWindow[] windows = PlatformUI.getWorkbench().getWorkbenchWindows();

@@ -16,9 +16,8 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.mylyn.context.core.ContextCore;
 import org.eclipse.mylyn.context.core.IInteractionContext;
-import org.eclipse.mylyn.internal.context.core.LocalContextStore;
+import org.eclipse.mylyn.internal.context.core.ContextCorePlugin;
 import org.eclipse.mylyn.internal.tasks.core.ITaskList;
 import org.eclipse.mylyn.internal.tasks.ui.TasksUiPlugin;
 import org.eclipse.mylyn.tasks.core.ITask;
@@ -109,7 +108,7 @@ public class CompoundContextActivationContributionItem extends CompoundContribut
 				if (confirmed) {
 					Job job = new Job("Import context") {
 						protected IStatus run(IProgressMonitor monitor) {
-							((LocalContextStore) ContextCore.getContextStore()).importContext(context);
+							ContextCorePlugin.getContextStore().saveContext(context);
 							scheduleTaskActivationJob();
 							return Status.OK_STATUS;
 						}
@@ -121,7 +120,7 @@ public class CompoundContextActivationContributionItem extends CompoundContribut
 			} else {
 				Job job = new Job("Import task") {
 					protected IStatus run(IProgressMonitor monitor) {
-						((LocalContextStore) ContextCore.getContextStore()).importContext(context);
+						ContextCorePlugin.getContextStore().saveContext(context);
 						taskList.addTask(task);
 						scheduleTaskActivationJob();
 						return Status.OK_STATUS;

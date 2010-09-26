@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.ecf.internal.mylyn.ui;
 
-import java.io.ByteArrayOutputStream;
+import java.io.*;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.*;
@@ -25,8 +25,7 @@ import org.eclipse.ecf.presence.ui.menu.AbstractRosterMenuContributionItem;
 import org.eclipse.ecf.presence.ui.menu.AbstractRosterMenuHandler;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.viewers.*;
-import org.eclipse.mylyn.internal.tasks.core.AbstractTask;
-import org.eclipse.mylyn.internal.tasks.ui.TasksUiPlugin;
+import org.eclipse.mylyn.internal.tasks.ui.util.ImportExportUtil;
 import org.eclipse.mylyn.tasks.core.ITask;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchSite;
@@ -82,10 +81,21 @@ public class SendContextContributionItem extends AbstractRosterMenuContributionI
 						Job job = new Job("Send Task") {
 							protected IStatus run(IProgressMonitor monitor) {
 								monitor.beginTask("Sending task...", 5);
-								ByteArrayOutputStream stream = new ByteArrayOutputStream();
-								TasksUiPlugin.getTaskListManager().getTaskListWriter().writeTask((AbstractTask) task, stream);
-								monitor.worked(2);
 								try {
+									File file = File.createTempFile("mylyn", ".xml.zip");
+									file.deleteOnExit();
+									ImportExportUtil.export(file, new StructuredSelection(task));
+									ByteArrayOutputStream stream = new ByteArrayOutputStream();
+									FileInputStream in = new FileInputStream(file);
+									try {
+										int i;
+										while ((i = in.read()) != -1) {
+											stream.write(i);
+										}
+									} finally {
+										in.close();
+									}
+									monitor.worked(2);
 									channel.sendMessage(getRosterEntry().getUser().getID(), stream.toByteArray());
 									monitor.worked(3);
 								} catch (Exception e) {

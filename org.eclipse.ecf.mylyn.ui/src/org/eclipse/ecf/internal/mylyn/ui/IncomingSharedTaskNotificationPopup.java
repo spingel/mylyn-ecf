@@ -17,9 +17,7 @@ package org.eclipse.ecf.internal.mylyn.ui;
 import org.eclipse.ecf.internal.mylyn.ui.CompoundContextActivationContributionItem.ActivateTaskAction;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
-import org.eclipse.mylyn.internal.provisional.commons.ui.AbstractNotificationPopup;
-import org.eclipse.mylyn.internal.provisional.commons.ui.CommonImages;
-import org.eclipse.mylyn.internal.tasks.ui.TaskListHyperlink;
+import org.eclipse.mylyn.internal.provisional.commons.ui.*;
 import org.eclipse.mylyn.tasks.core.ITask;
 import org.eclipse.mylyn.tasks.ui.TaskElementLabelProvider;
 import org.eclipse.swt.SWT;
@@ -56,7 +54,7 @@ class IncomingSharedTaskNotificationPopup extends AbstractNotificationPopup {
 		notificationLabelIcon.setBackground(parent.getBackground());
 		notificationLabelIcon.setImage(CommonImages.getImage(CommonImages.OVERLAY_SYNC_INCOMMING_NEW));
 
-		final TaskListHyperlink itemLink = new TaskListHyperlink(notificationComposite, SWT.BEGINNING | SWT.WRAP | SWT.NO_FOCUS);
+		final ScalingHyperlink itemLink = new ScalingHyperlink(notificationComposite, SWT.BEGINNING | SWT.WRAP | SWT.NO_FOCUS);
 		itemLink.setText(task.getTaskId());
 		itemLink.setImage(labelProvider.getImage(task));
 		itemLink.setBackground(parent.getBackground());
