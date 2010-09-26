@@ -14,10 +14,13 @@ package org.eclipse.ecf.internal.mylyn.ui;
 import java.io.File;
 import java.io.FileOutputStream;
 import org.eclipse.core.runtime.*;
+import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.util.ContainerManagerTracker;
 import org.eclipse.ecf.datashare.*;
 import org.eclipse.ecf.datashare.events.IChannelEvent;
 import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
+import org.eclipse.ecf.internal.mylyn.ui.repository.RepositoryManager;
 import org.eclipse.ecf.presence.service.IPresenceService;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.mylyn.context.core.IInteractionContext;
@@ -40,11 +43,16 @@ public class Activator extends AbstractUIPlugin implements IChannelListener, Ser
 
 	private BundleContext context;
 
+	private ContainerManagerTracker tracker;
+
+	private RepositoryManager manager;
+
 	public void start(final BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
 		this.context = context;
 		context.addServiceListener(this);
+		tracker = new ContainerManagerTracker(context);
 	}
 
 	protected void initializeImageRegistry(ImageRegistry reg) {
@@ -52,8 +60,12 @@ public class Activator extends AbstractUIPlugin implements IChannelListener, Ser
 	}
 
 	public void stop(BundleContext context) throws Exception {
+		if (manager != null) {
+			manager.write();
+		}
 		plugin = null;
 		context.removeServiceListener(this);
+		tracker.close();
 		super.stop(context);
 	}
 
@@ -159,4 +171,22 @@ public class Activator extends AbstractUIPlugin implements IChannelListener, Ser
 	public static Activator getDefault() {
 		return plugin;
 	}
+
+	public IContainerManager getContainerManager() {
+		return tracker.getContainerManager();
+	}
+
+	public synchronized RepositoryManager getRepositoryManager() {
+		if (manager == null) {
+			manager = new RepositoryManager(getRepostioriesPath().toFile());
+		}
+		return manager;
+	}
+
+	private IPath getRepostioriesPath() {
+		IPath stateLocation = Platform.getStateLocation(getBundle());
+		IPath cacheFile = stateLocation.append("repositories.bin"); //$NON-NLS-1$
+		return cacheFile;
+	}
+
 }
